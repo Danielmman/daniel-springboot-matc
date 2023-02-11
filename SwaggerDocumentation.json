@@ -1,0 +1,920 @@
+{
+	"swagger": "2.0",
+	"info": {
+		"description": "Interaction between admin and employee",
+		"title": "EMS - Employee Management System"
+	},
+	"host": "localhost:8000",
+	"basePath": "/",
+	"tags": [
+		{
+			"name": "auth-controller",
+			"description": "Auth Controller"
+		},
+		{
+			"name": "employee-controller",
+			"description": "Employee Controller"
+		}
+	],
+	"paths": {
+		"/v1": {
+			"get": {
+				"tags": [
+					"employee-controller"
+				],
+				"summary": "adminGetEmployeePage",
+				"operationId": "adminGetEmployeePageUsingGET",
+				"consumes": [
+					"application/json"
+				],
+				"produces": [
+					"*/*"
+				],
+				"parameters": [
+					{
+						"name": "pageNo",
+						"in": "query",
+						"description": "pageNo",
+						"required": false,
+						"type": "integer",
+						"default": 0,
+						"format": "int32"
+					},
+					{
+						"name": "pageSize",
+						"in": "query",
+						"description": "pageSize",
+						"required": false,
+						"type": "integer",
+						"default": 5,
+						"format": "int32"
+					},
+					{
+						"name": "sortBy",
+						"in": "query",
+						"description": "sortBy",
+						"required": false,
+						"type": "string",
+						"default": "empName"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/Employee"
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					},
+					"404": {
+						"description": "Not Found"
+					}
+				}
+			}
+		},
+		"/v1/admin/employee": {
+			"get": {
+				"tags": [
+					"employee-controller"
+				],
+				"summary": "adminGetEmployeeByMailId",
+				"operationId": "adminGetEmployeeByMailIdUsingGET",
+				"consumes": [
+					"application/json"
+				],
+				"produces": [
+					"*/*"
+				],
+				"parameters": [
+					{
+						"name": "mail",
+						"in": "query",
+						"description": "mail",
+						"required": false,
+						"type": "string"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"schema": {
+							"$ref": "#/definitions/GetEmployeeDTO"
+						}
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					},
+					"404": {
+						"description": "Not Found"
+					}
+				}
+			},
+			"post": {
+				"tags": [
+					"employee-controller"
+				],
+				"summary": "adminCreateEmployeeUserId",
+				"operationId": "adminCreateEmployeeUserIdUsingPOST",
+				"consumes": [
+					"application/json"
+				],
+				"produces": [
+					"*/*"
+				],
+				"parameters": [
+					{
+						"in": "body",
+						"name": "employee",
+						"description": "employee",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/EmployeeDTO"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"schema": {
+							"$ref": "#/definitions/MessageDisplayPojo"
+						}
+					},
+					"201": {
+						"description": "Created"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					},
+					"404": {
+						"description": "Not Found"
+					}
+				}
+			},
+			"put": {
+				"tags": [
+					"employee-controller"
+				],
+				"summary": "adminUpdateEmployeeDetail",
+				"operationId": "adminUpdateEmployeeDetailUsingPUT",
+				"consumes": [
+					"application/json"
+				],
+				"produces": [
+					"*/*"
+				],
+				"parameters": [
+					{
+						"name": "mail",
+						"in": "query",
+						"description": "mail",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"in": "body",
+						"name": "employee",
+						"description": "employee",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/AdminUpdateEmployeeDTO"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"schema": {
+							"$ref": "#/definitions/MessageDisplayPojo"
+						}
+					},
+					"201": {
+						"description": "Created"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					},
+					"404": {
+						"description": "Not Found"
+					}
+				}
+			},
+			"delete": {
+				"tags": [
+					"employee-controller"
+				],
+				"summary": "adminRemoveUser",
+				"operationId": "adminRemoveUserUsingDELETE",
+				"consumes": [
+					"application/json"
+				],
+				"produces": [
+					"*/*"
+				],
+				"parameters": [
+					{
+						"name": "mail",
+						"in": "query",
+						"description": "mail",
+						"required": true,
+						"type": "string"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"schema": {
+							"$ref": "#/definitions/MessageDisplayPojo"
+						}
+					},
+					"204": {
+						"description": "No Content"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/v1/admin/employee/all": {
+			"get": {
+				"tags": [
+					"employee-controller"
+				],
+				"summary": "adminViewAllEmployeeMongoDB",
+				"operationId": "adminViewAllEmployeeMongoDBUsingGET",
+				"consumes": [
+					"application/json"
+				],
+				"produces": [
+					"*/*"
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/Employee"
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					},
+					"404": {
+						"description": "Not Found"
+					}
+				}
+			},
+			"delete": {
+				"tags": [
+					"employee-controller"
+				],
+				"summary": "adminRemoveAllUserMongoDB",
+				"operationId": "adminRemoveAllUserMongoDBUsingDELETE",
+				"consumes": [
+					"application/json"
+				],
+				"produces": [
+					"*/*"
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"schema": {
+							"$ref": "#/definitions/MessageDisplayPojo"
+						}
+					},
+					"204": {
+						"description": "No Content"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					}
+				}
+			}
+		},
+		"/v1/admin/employee/current": {
+			"get": {
+				"tags": [
+					"employee-controller"
+				],
+				"summary": "adminViewAllEmployee",
+				"operationId": "adminViewAllEmployeeUsingGET",
+				"consumes": [
+					"application/json"
+				],
+				"produces": [
+					"*/*"
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/Employee"
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					},
+					"404": {
+						"description": "Not Found"
+					}
+				}
+			}
+		},
+		"/v1/auth/signin": {
+			"post": {
+				"tags": [
+					"auth-controller"
+				],
+				"summary": "authenticateUser",
+				"operationId": "authenticateUserUsingPOST",
+				"consumes": [
+					"application/json"
+				],
+				"produces": [
+					"*/*"
+				],
+				"parameters": [
+					{
+						"in": "body",
+						"name": "loginRequestDTO",
+						"description": "loginRequestDTO",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/LoginRequestDTO"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"schema": {
+							"$ref": "#/definitions/JwtResponse"
+						}
+					},
+					"201": {
+						"description": "Created"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					},
+					"404": {
+						"description": "Not Found"
+					}
+				}
+			}
+		},
+		"/v1/auth/signup": {
+			"post": {
+				"tags": [
+					"auth-controller"
+				],
+				"summary": "registerUser",
+				"operationId": "registerUserUsingPOST",
+				"consumes": [
+					"application/json"
+				],
+				"produces": [
+					"*/*"
+				],
+				"parameters": [
+					{
+						"in": "body",
+						"name": "signUpRequest",
+						"description": "signUpRequest",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/SignupRequestDTO"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"schema": {
+							"type": "object"
+						}
+					},
+					"201": {
+						"description": "Created"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					},
+					"404": {
+						"description": "Not Found"
+					}
+				}
+			}
+		},
+		"/v1/employee": {
+			"get": {
+				"tags": [
+					"employee-controller"
+				],
+				"summary": "userViewEmployeeDetail",
+				"operationId": "userViewEmployeeDetailUsingGET",
+				"consumes": [
+					"application/json"
+				],
+				"produces": [
+					"*/*"
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"schema": {
+							"$ref": "#/definitions/GetEmployeeDTO"
+						}
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					},
+					"404": {
+						"description": "Not Found"
+					}
+				}
+			}
+		},
+		"/v1/employee/address": {
+			"put": {
+				"tags": [
+					"employee-controller"
+				],
+				"summary": "userUpdateAddressDtl",
+				"operationId": "userUpdateAddressDtlUsingPUT",
+				"consumes": [
+					"application/json"
+				],
+				"produces": [
+					"*/*"
+				],
+				"parameters": [
+					{
+						"name": "addressType",
+						"in": "query",
+						"required": false,
+						"type": "string",
+						"enum": [
+							"PERMANENT",
+							"CURRENT"
+						]
+					},
+					{
+						"name": "doorNumber",
+						"in": "query",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "street",
+						"in": "query",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "district",
+						"in": "query",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "state",
+						"in": "query",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "pinCode",
+						"in": "query",
+						"required": false,
+						"type": "integer",
+						"format": "int32"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"schema": {
+							"$ref": "#/definitions/MessageDisplayPojo"
+						}
+					},
+					"201": {
+						"description": "Created"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					},
+					"404": {
+						"description": "Not Found"
+					}
+				}
+			}
+		},
+		"/v1/employee/person": {
+			"put": {
+				"tags": [
+					"employee-controller"
+				],
+				"summary": "userUpdatePersonDtl",
+				"operationId": "userUpdatePersonDtlUsingPUT",
+				"consumes": [
+					"application/json"
+				],
+				"produces": [
+					"*/*"
+				],
+				"parameters": [
+					{
+						"name": "empMobileNumber",
+						"in": "query",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "empGender",
+						"in": "query",
+						"required": false,
+						"type": "string",
+						"enum": [
+							"MALE",
+							"FEMALE"
+						]
+					},
+					{
+						"name": "empAge",
+						"in": "query",
+						"required": false,
+						"type": "integer",
+						"format": "int32"
+					},
+					{
+						"name": "empMaritalStatus",
+						"in": "query",
+						"required": false,
+						"type": "string",
+						"enum": [
+							"MARRIED",
+							"UNMARRIED"
+						]
+					},
+					{
+						"name": "empAadharNumber",
+						"in": "query",
+						"required": false,
+						"type": "string"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"schema": {
+							"$ref": "#/definitions/MessageDisplayPojo"
+						}
+					},
+					"201": {
+						"description": "Created"
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"403": {
+						"description": "Forbidden"
+					},
+					"404": {
+						"description": "Not Found"
+					}
+				}
+			}
+		}
+	},
+	"securityDefinitions": {
+		"jwtToken": {
+			"type": "apiKey",
+			"name": "Authorization",
+			"in": "header"
+		}
+	},
+	"definitions": {
+		"Address": {
+			"type": "object",
+			"properties": {
+				"addressType": {
+					"type": "string",
+					"enum": [
+						"PERMANENT",
+						"CURRENT"
+					]
+				},
+				"district": {
+					"type": "string"
+				},
+				"doorNumber": {
+					"type": "string"
+				},
+				"pinCode": {
+					"type": "integer",
+					"format": "int32"
+				},
+				"state": {
+					"type": "string"
+				},
+				"street": {
+					"type": "string"
+				}
+			}
+		},
+		"AdminUpdateEmployeeDTO": {
+			"type": "object",
+			"properties": {
+				"empAchievement": {
+					"type": "string",
+					"enum": [
+						"LEVEL_1",
+						"LEVEL_2",
+						"LEVEL_3",
+						"LEVEL_4",
+						"LEVEL_5"
+					]
+				},
+				"empPosition": {
+					"type": "string",
+					"enum": [
+						"PROGRAMMER_ANALYST_TRAINEE",
+						"PROGRAMMER_ANALYST",
+						"ASSOCIATE",
+						"SENIOR_ASSOCIATE",
+						"MANAGER",
+						"SENIOR_MANAGER",
+						"ASSISTANT_DIRECTOR",
+						"DIRECTOR",
+						"SENIOR_DIRECTOR",
+						"AVP",
+						"VP",
+						"SVP",
+						"CTO",
+						"CIO",
+						"CEO"
+					]
+				}
+			}
+		},
+		"Employee": {
+			"type": "object",
+			"properties": {
+				"empAchievement": {
+					"type": "string",
+					"enum": [
+						"LEVEL_1",
+						"LEVEL_2",
+						"LEVEL_3",
+						"LEVEL_4",
+						"LEVEL_5"
+					]
+				},
+				"empId": {
+					"type": "string"
+				},
+				"empJoiningDate": {
+					"type": "string",
+					"format": "date"
+				},
+				"empMail": {
+					"type": "string"
+				},
+				"empMobileNumber": {
+					"type": "string"
+				},
+				"empName": {
+					"type": "string"
+				},
+				"empPersonalDetail": {
+					"$ref": "#/definitions/Person"
+				},
+				"empPosition": {
+					"type": "string",
+					"enum": [
+						"PROGRAMMER_ANALYST_TRAINEE",
+						"PROGRAMMER_ANALYST",
+						"ASSOCIATE",
+						"SENIOR_ASSOCIATE",
+						"MANAGER",
+						"SENIOR_MANAGER",
+						"ASSISTANT_DIRECTOR",
+						"DIRECTOR",
+						"SENIOR_DIRECTOR",
+						"AVP",
+						"VP",
+						"SVP",
+						"CTO",
+						"CIO",
+						"CEO"
+					]
+				},
+				"employeeAddress": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/Address"
+					}
+				}
+			}
+		},
+		"EmployeeDTO": {
+			"type": "object",
+			"properties": {
+				"empAchievement": {
+					"type": "string",
+					"enum": [
+						"LEVEL_1",
+						"LEVEL_2",
+						"LEVEL_3",
+						"LEVEL_4",
+						"LEVEL_5"
+					]
+				},
+				"empJoiningDate": {
+					"type": "string",
+					"format": "date"
+				},
+				"empMobileNumber": {
+					"type": "string"
+				},
+				"empName": {
+					"type": "string"
+				},
+				"empPersonalDetail": {
+					"$ref": "#/definitions/Person"
+				},
+				"empPosition": {
+					"type": "string",
+					"enum": [
+						"PROGRAMMER_ANALYST_TRAINEE",
+						"PROGRAMMER_ANALYST",
+						"ASSOCIATE",
+						"SENIOR_ASSOCIATE",
+						"MANAGER",
+						"SENIOR_MANAGER",
+						"ASSISTANT_DIRECTOR",
+						"DIRECTOR",
+						"SENIOR_DIRECTOR",
+						"AVP",
+						"VP",
+						"SVP",
+						"CTO",
+						"CIO",
+						"CEO"
+					]
+				},
+				"employeeAddress": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/Address"
+					}
+				}
+			}
+		},
+		"GetEmployeeDTO": {
+			"type": "object",
+			"properties": {
+				"employeeDtl": {
+					"$ref": "#/definitions/Employee"
+				},
+				"message": {
+					"type": "string"
+				}
+			}
+		},
+		"JwtResponse": {
+			"type": "object",
+			"properties": {
+				"accessToken": {
+					"type": "string"
+				},
+				"id": {
+					"type": "integer",
+					"format": "int64"
+				},
+				"roles": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					}
+				},
+				"tokenType": {
+					"type": "string"
+				},
+				"username": {
+					"type": "string"
+				}
+			}
+		},
+		"LoginRequestDTO": {
+			"type": "object",
+			"properties": {
+				"password": {
+					"type": "string"
+				},
+				"username": {
+					"type": "string"
+				}
+			}
+		},
+		"MessageDisplayPojo": {
+			"type": "object",
+			"properties": {
+				"message": {
+					"type": "string"
+				}
+			}
+		},
+		"Person": {
+			"type": "object",
+			"properties": {
+				"empAadharNumber": {
+					"type": "string"
+				},
+				"empAge": {
+					"type": "integer",
+					"format": "int32"
+				},
+				"empGender": {
+					"type": "string",
+					"enum": [
+						"MALE",
+						"FEMALE"
+					]
+				},
+				"empMaritalStatus": {
+					"type": "string",
+					"enum": [
+						"MARRIED",
+						"UNMARRIED"
+					]
+				}
+			}
+		},
+		"SignupRequestDTO": {
+			"type": "object",
+			"properties": {
+				"password": {
+					"type": "string"
+				},
+				"role": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					}
+				},
+				"username": {
+					"type": "string"
+				}
+			}
+		}
+	}
+}

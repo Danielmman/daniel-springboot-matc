@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Employee.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">EmployeeManagementSystem-MATC</a> &gt; <a href="index.source.html" class="el_package">com.ems.model</a> &gt; <span class="el_source">Employee.java</span></div><h1>Employee.java</h1><pre class="source lang-java linenums">package com.ems.model;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+
+import org.hibernate.annotations.GenericGenerator;
+
+import com.ems.customdt.Achievement;
+import com.ems.customdt.EmployeePosition;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+<span class="pc bnc" id="L27" title="All 78 branches missed.">@Data</span>
+@Entity
+<span class="fc" id="L29">@NoArgsConstructor</span>
+<span class="fc" id="L30">@AllArgsConstructor</span>
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = { &quot;empName&quot;, &quot;empMail&quot; }))
+public class Employee {
+	@Id
+	@GeneratedValue(generator = &quot;UUID&quot;)
+	@GenericGenerator(name = &quot;UUID&quot;, strategy = &quot;org.hibernate.id.UUIDGenerator&quot;)
+<span class="fc" id="L36">	private String empId;</span>
+	@NotBlank
+<span class="fc" id="L38">	private String empName;</span>
+	@Email
+<span class="fc" id="L40">	private String empMail;</span>
+<span class="fc" id="L41">	private EmployeePosition empPosition;</span>
+<span class="fc" id="L42">	private LocalDate empJoiningDate;</span>
+<span class="fc" id="L43">	private Achievement empAchievement;</span>
+<span class="fc" id="L44">	private String empMobileNumber;</span>
+
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+<span class="fc" id="L47">	private Person empPersonalDetail;</span>
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+<span class="fc" id="L49">	private List&lt;Address&gt; employeeAddress;</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

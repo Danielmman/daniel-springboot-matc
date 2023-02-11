@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BaseException.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">EmployeeManagementSystem-MATC</a> &gt; <a href="index.source.html" class="el_package">com.ems.base.exception</a> &gt; <span class="el_source">BaseException.java</span></div><h1>BaseException.java</h1><pre class="source lang-java linenums">package com.ems.base.exception;
+
+public class BaseException extends Exception {
+
+	private static final long serialVersionUID = 1L;
+	protected String errorCode;
+	protected String[] errorParams;
+
+	public BaseException(String errorCode) {
+<span class="nc" id="L10">		super(errorCode);</span>
+<span class="nc" id="L11">		this.errorCode = errorCode;</span>
+<span class="nc" id="L12">	}</span>
+
+	public BaseException(String errorCode, String message) {
+<span class="nc" id="L15">		super(message);</span>
+<span class="nc" id="L16">		this.errorCode = errorCode;</span>
+<span class="nc" id="L17">	}</span>
+
+	public BaseException(String errorCode, String message, String[] errorParams) {
+<span class="nc" id="L20">		super(message);</span>
+<span class="nc" id="L21">		this.errorCode = errorCode;</span>
+<span class="nc" id="L22">		this.errorParams = errorParams;</span>
+<span class="nc" id="L23">	}</span>
+
+	public BaseException(Throwable cause) {
+<span class="nc" id="L26">		super(cause);</span>
+<span class="nc bnc" id="L27" title="All 2 branches missed.">		if (cause instanceof BaseException) {</span>
+<span class="nc" id="L28">			BaseException ex = ((BaseException) cause);</span>
+<span class="nc" id="L29">			setErrorCode(ex.getErrorCode());</span>
+<span class="nc" id="L30">			setErrorParams(ex.getErrorParams());</span>
+		}
+<span class="nc" id="L32">	}</span>
+
+	public String getErrorCode() {
+<span class="nc" id="L35">		return errorCode;</span>
+	}
+
+	public void setErrorCode(String errorCode) {
+<span class="nc" id="L39">		this.errorCode = errorCode;</span>
+<span class="nc" id="L40">	}</span>
+
+	public String[] getErrorParams() {
+<span class="nc" id="L43">		return errorParams;</span>
+	}
+
+	public void setErrorParams(String[] errorParams) {
+<span class="nc" id="L47">		this.errorParams = errorParams;</span>
+<span class="nc" id="L48">	}</span>
+
+	public String toString() {
+<span class="nc" id="L51">		String s = getClass().getName() + &quot;: (&quot; + errorCode + &quot;)&quot;;</span>
+<span class="nc" id="L52">		String message = getLocalizedMessage();</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">		return (message != null) ? (s + &quot; &quot; + message) : s;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JwtUtils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">EmployeeManagementSystem-MATC</a> &gt; <a href="index.source.html" class="el_package">com.ems.security</a> &gt; <span class="el_source">JwtUtils.java</span></div><h1>JwtUtils.java</h1><pre class="source lang-java linenums">package com.ems.security;
+
+import java.util.Date;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Component;
+
+import com.ems.model.sub.LoginLog;
+import com.ems.repository.LoginLogRepository;
+
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
+
+/**
+ * &lt;h1&gt;Jwt Utils&lt;/h2&gt;
+ * 
+ * @author Daniel
+ *
+ */
+@Component
+<span class="nc" id="L29">public class JwtUtils {</span>
+
+<span class="nc" id="L31">	private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);</span>
+
+	@Autowired
+	private LoginLogRepository loginLogRepository;
+
+	@Value(&quot;${ems.app.jwtSecret}&quot;)
+	private String jwtSecret;
+
+	@Value(&quot;${ems.app.jwtExpirationMs}&quot;)
+	private int jwtExpirationMs;
+
+	/**
+	 * &lt;h2&gt;Generate JWT Token&lt;/h2&gt;
+	 * 
+	 * @param authentication
+	 * @return
+	 */
+	public String generateJwtToken(Authentication authentication) {
+
+<span class="nc" id="L50">		UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();</span>
+		// calling login log log method to store logs
+<span class="nc" id="L52">		loginLog(authentication);</span>
+<span class="nc" id="L53">		return Jwts.builder().setSubject((userPrincipal.getUsername())).setIssuedAt(new Date())</span>
+<span class="nc" id="L54">				.setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))</span>
+<span class="nc" id="L55">				.signWith(SignatureAlgorithm.HS512, jwtSecret).compact();</span>
+	}
+
+	/**
+	 * &lt;h2&gt;Login Log&lt;/h2&gt;
+	 * 
+	 * Store every user's login time, user name and role
+	 * 
+	 * @param authentication
+	 */
+	public void loginLog(Authentication authentication) {
+<span class="nc" id="L66">		UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();</span>
+<span class="nc" id="L67">		LoginLog newUserLog = new LoginLog();</span>
+<span class="nc" id="L68">		newUserLog.setAccesstime(newUserLog.getAccesstime());</span>
+<span class="nc" id="L69">		newUserLog.setUserName(userPrincipal.getUsername());</span>
+<span class="nc" id="L70">		newUserLog.setRole(userPrincipal.getAuthorities().toString());</span>
+<span class="nc" id="L71">		loginLogRepository.save(newUserLog);</span>
+<span class="nc" id="L72">		logger.info(authentication.getName(), &quot; log saved&quot;);</span>
+<span class="nc" id="L73">	}</span>
+
+	/**
+	 * &lt;h2&gt;Get User Name From JWT Token&lt;/h2&gt;
+	 * 
+	 * @param token
+	 * @return
+	 */
+	public String getUserNameFromJwtToken(String token) {
+<span class="nc" id="L82">		return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();</span>
+	}
+
+	/**
+	 * &lt;h2&gt;Validate JWT Token&lt;/h2&gt;
+	 * 
+	 * @param authToken
+	 * @return
+	 */
+	public boolean validateJwtToken(String authToken) {
+		try {
+<span class="nc" id="L93">			Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);</span>
+<span class="nc" id="L94">			return true;</span>
+<span class="nc" id="L95">		} catch (SignatureException e) {</span>
+<span class="nc" id="L96">			logger.error(&quot;Invalid JWT signature: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L97">		} catch (MalformedJwtException e) {</span>
+<span class="nc" id="L98">			logger.error(&quot;Invalid JWT token: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L99">		} catch (ExpiredJwtException e) {</span>
+<span class="nc" id="L100">			logger.error(&quot;JWT token is expired: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L101">		} catch (UnsupportedJwtException e) {</span>
+<span class="nc" id="L102">			logger.error(&quot;JWT token is unsupported: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L103">		} catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L104">			logger.error(&quot;JWT claims string is empty: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L105">		}</span>
+
+<span class="nc" id="L107">		return false;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

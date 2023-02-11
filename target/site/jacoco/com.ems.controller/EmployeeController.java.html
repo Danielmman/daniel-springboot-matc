@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EmployeeController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">EmployeeManagementSystem-MATC</a> &gt; <a href="index.source.html" class="el_package">com.ems.controller</a> &gt; <span class="el_source">EmployeeController.java</span></div><h1>EmployeeController.java</h1><pre class="source lang-java linenums">package com.ems.controller;
+
+import java.util.List;
+
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.ems.base.exception.BusinessException;
+import com.ems.base.exception.TechnicalException;
+import com.ems.dto.AddressDTO;
+import com.ems.dto.AdminUpdateEmployeeDTO;
+import com.ems.dto.EmployeeDTO;
+import com.ems.dto.GetEmployeeDTO;
+import com.ems.dto.MessageDisplayDTO;
+import com.ems.dto.PersonDTO;
+import com.ems.model.Employee;
+import com.ems.service.EmployeeService;
+
+import lombok.extern.log4j.Log4j2;
+
+/**
+ * &lt;h1&gt;Employee CRUD API Controller&lt;/h1&gt;
+ * 
+ * @author Daniel
+ *
+ */
+<span class="fc" id="L38">@Log4j2</span>
+@RestController
+@RequestMapping(&quot;/v1&quot;)
+<span class="nc" id="L41">public class EmployeeController {</span>
+
+	@Autowired
+	private EmployeeService userService;
+
+	/**
+	 * &lt;h2&gt;Admin Get Employee Page API&lt;/h2&gt;
+	 * 
+	 * Get all employee with pagination (page number, page size and sort by)
+	 * 
+	 * @param pageNo
+	 * @param pageSize
+	 * @param sortBy
+	 * @return
+	 * @throws BusinessException
+	 */
+	@PreAuthorize(&quot;hasRole('ADMIN')&quot;)
+	@GetMapping(&quot;&quot;)
+	public List&lt;Employee&gt; adminGetEmployeePage(@RequestParam(defaultValue = &quot;0&quot;) Integer pageNo,
+			@RequestParam(defaultValue = &quot;5&quot;) Integer pageSize, @RequestParam(defaultValue = &quot;empName&quot;) String sortBy)
+			throws BusinessException {
+<span class="nc" id="L62">		List&lt;Employee&gt; listEmployee = null;</span>
+		try {
+<span class="nc" id="L64">			listEmployee = userService.adminGetEmployeePage(pageNo, pageSize, sortBy).toList();</span>
+<span class="nc" id="L65">			log.debug(&quot;Admin-Controller-AdminGetEmployeePage-Accessed&quot;);</span>
+<span class="nc" id="L66">		} catch (BusinessException e) {</span>
+<span class="nc" id="L67">			log.error(&quot;Admin-Controller-AdminGetEmployeePage-Failed&quot;);</span>
+<span class="nc" id="L68">			throw new BusinessException(e.getErrorCode(), e.getMessage(), e.getErrorParams());</span>
+<span class="nc" id="L69">		}</span>
+<span class="nc" id="L70">		return listEmployee;</span>
+	}
+
+	/**
+	 *
+	 * &lt;h2&gt;Admin Create Employee User Id API&lt;/h2&gt;
+	 * 
+	 * Save employee detail (employee, person and address)
+	 * 
+	 * @param employee
+	 * @return
+	 * @throws BusinessException
+	 * @throws TechnicalException
+	 */
+	@PostMapping(&quot;/admin/employee&quot;)
+	@PreAuthorize(&quot;hasRole('ADMIN')&quot;)
+	public MessageDisplayDTO adminCreateEmployeeUserId(@Valid @RequestBody EmployeeDTO employee)
+			throws BusinessException, TechnicalException {
+<span class="nc" id="L88">		MessageDisplayDTO messageResponse = null;</span>
+		try {
+<span class="nc" id="L90">			messageResponse = userService.adminCreateEmployeeUserId(employee);</span>
+<span class="nc" id="L91">			log.debug(&quot;Admin-Controller-AdminCreateEmployeeUserId-Accessed&quot;);</span>
+<span class="nc" id="L92">		} catch (BusinessException e) {</span>
+<span class="nc" id="L93">			log.error(&quot;Admin-Controller-AdminCreateEmployeeUserId-Failed&quot;);</span>
+<span class="nc" id="L94">			throw new BusinessException(e.getErrorCode(), e.getMessage(), e.getErrorParams());</span>
+<span class="nc" id="L95">		}</span>
+<span class="nc" id="L96">		return messageResponse;</span>
+	}
+
+	/**
+	 * &lt;h2&gt;Admin Update Employee Detail API&lt;/h2&gt;
+	 * 
+	 * Update employee's position and achievement
+	 * 
+	 * @param mail
+	 * @param employee
+	 * @return
+	 * @throws BusinessException
+	 */
+	@PreAuthorize(&quot;hasRole('ADMIN')&quot;)
+	@PutMapping(&quot;/admin/employee&quot;)
+	public MessageDisplayDTO adminUpdateEmployeeDetail(@RequestParam String mail,
+			@RequestBody AdminUpdateEmployeeDTO employee) throws BusinessException {
+		MessageDisplayDTO messageDisplayDTO;
+		try {
+<span class="nc" id="L115">			messageDisplayDTO = userService.adminUpdateEmployeeDetail(mail, employee);</span>
+<span class="nc" id="L116">			log.debug(&quot;Admin-Controller-AdminUpdateEmployeeDetail-Accessed&quot;);</span>
+<span class="nc" id="L117">		} catch (BusinessException e) {</span>
+<span class="nc" id="L118">			log.error(&quot;Admin-Controller-AdminUpdateEmployeeDetail-Failed&quot;);</span>
+<span class="nc" id="L119">			throw new BusinessException(e.getErrorCode(), e.getMessage(), e.getErrorParams());</span>
+<span class="nc" id="L120">		}</span>
+<span class="nc" id="L121">		return messageDisplayDTO;</span>
+	}
+
+	/**
+	 * &lt;h2&gt;Admin Remove User API&lt;/h2&gt;
+	 * 
+	 * Delete user with mail id
+	 * 
+	 * @param mail
+	 * @return
+	 * @throws BusinessException
+	 */
+
+	@PreAuthorize(&quot;hasRole('ADMIN')&quot;)
+	@DeleteMapping(&quot;/admin/employee&quot;)
+	public MessageDisplayDTO adminRemoveUser(@RequestParam String mail) throws BusinessException {
+		String message;
+		try {
+<span class="nc" id="L139">			message = userService.adminRemoveUser(mail);</span>
+<span class="nc" id="L140">			log.debug(&quot;Admin-Controller-AdminRemoveUser-Accessed&quot;);</span>
+<span class="nc" id="L141">		} catch (BusinessException e) {</span>
+<span class="nc" id="L142">			log.error(&quot;Admin-Controller-AdminRemoveUser-Failed&quot;);</span>
+<span class="nc" id="L143">			throw new BusinessException(e.getErrorCode(), e.getMessage(), e.getErrorParams());</span>
+<span class="nc" id="L144">		}</span>
+<span class="nc" id="L145">		return new MessageDisplayDTO(message);</span>
+	}
+
+	/**
+	 * &lt;h2&gt;Admin Remove All User MongoDB API&lt;/h2&gt;
+	 * 
+	 * Remove all users
+	 * 
+	 * @return
+	 * @throws BusinessException
+	 */
+	@PreAuthorize(&quot;hasRole('ADMIN')&quot;)
+	@DeleteMapping(&quot;/admin/employee/all&quot;)
+	public MessageDisplayDTO adminRemoveAllUserMongoDB() throws BusinessException {
+		String message;
+		try {
+<span class="nc" id="L161">			message = userService.adminRemoveAllEmployeeMongoDB();</span>
+<span class="nc" id="L162">			log.debug(&quot;Admin-Controller-AdminRemoveAllUserMongoDB-Accessed&quot;);</span>
+<span class="nc" id="L163">		} catch (BusinessException e) {</span>
+<span class="nc" id="L164">			log.error(&quot;Admin-Controller-AdminRemoveAllUserMongoDB-Failed&quot;);</span>
+<span class="nc" id="L165">			throw new BusinessException(e.getErrorCode(), e.getMessage(), e.getErrorParams());</span>
+<span class="nc" id="L166">		}</span>
+<span class="nc" id="L167">		return new MessageDisplayDTO(message);</span>
+	}
+
+	/**
+	 * &lt;h2&gt;Admin View All Employee API&lt;/h2&gt;
+	 * 
+	 * Display all employee
+	 * 
+	 * @return
+	 * @throws BusinessException
+	 */
+	@GetMapping(&quot;admin/employee/current&quot;)
+	@PreAuthorize(&quot;hasRole('ADMIN')&quot;)
+	public List&lt;Employee&gt; adminViewAllEmployee() throws BusinessException {
+<span class="nc" id="L181">		List&lt;Employee&gt; viewall = null;</span>
+		try {
+<span class="nc" id="L183">			viewall = userService.adminViewAllEmployee();</span>
+<span class="nc" id="L184">			log.debug(&quot;Admin-Controller-AdminViewAllEmployee-Accessed&quot;);</span>
+<span class="nc" id="L185">		} catch (BusinessException e) {</span>
+<span class="nc" id="L186">			log.error(&quot;Admin-Controller-AdminViewAllEmployee-Failed&quot;);</span>
+<span class="nc" id="L187">			throw new BusinessException(e.getErrorCode(), e.getMessage(), e.getErrorParams());</span>
+<span class="nc" id="L188">		}</span>
+<span class="nc" id="L189">		return viewall;</span>
+	}
+
+	/**
+	 * &lt;h2&gt;Admin View All Employee MongoDB API&lt;/h2&gt;
+	 * 
+	 * Display all employee
+	 * 
+	 * @return
+	 * @throws BusinessException
+	 */
+	@GetMapping(&quot;admin/employee/all&quot;)
+	@PreAuthorize(&quot;hasRole('ADMIN')&quot;)
+	public List&lt;Employee&gt; adminViewAllEmployeeMongoDB() throws BusinessException {
+<span class="nc" id="L203">		List&lt;Employee&gt; viewall = null;</span>
+		try {
+<span class="nc" id="L205">			viewall = userService.adminViewAllEmployeeMongoDB();</span>
+<span class="nc" id="L206">			log.debug(&quot;Admin-Controller-AdminViewAllEmployeeMongoDB-Accessed&quot;);</span>
+<span class="nc" id="L207">		} catch (BusinessException e) {</span>
+<span class="nc" id="L208">			log.error(&quot;Admin-Controller-AdminViewAllEmployeeMongoDB-Failed&quot;);</span>
+<span class="nc" id="L209">			throw new BusinessException(e.getErrorCode(), e.getMessage(), e.getErrorParams());</span>
+<span class="nc" id="L210">		}</span>
+<span class="nc" id="L211">		return viewall;</span>
+	}
+
+	/**
+	 * &lt;h2&gt;Admin Get Employee by Mail Id API&lt;/h2&gt;
+	 * 
+	 * Get particular employee detail with mail id
+	 * 
+	 * @param mail
+	 * @return
+	 * @throws BusinessException
+	 */
+	@GetMapping(&quot;admin/employee&quot;)
+	@PreAuthorize(&quot;hasRole('ADMIN')&quot;)
+	public GetEmployeeDTO adminGetEmployeeByMailId(String mail) throws BusinessException {
+<span class="nc" id="L226">		GetEmployeeDTO empByMailId = null;</span>
+		try {
+<span class="nc" id="L228">			empByMailId = userService.adminGetEmployeeByMailId(mail);</span>
+<span class="nc" id="L229">			log.debug(&quot;Admin-Controller-AdminGetEmployeeByMailId-Accessed&quot;);</span>
+<span class="nc" id="L230">		} catch (BusinessException e) {</span>
+<span class="nc" id="L231">			log.error(&quot;Admin-Controller-AdminGetEmployeeByMailId-Failed&quot;);</span>
+<span class="nc" id="L232">			throw new BusinessException(e.getErrorCode(), e.getMessage(), e.getErrorParams());</span>
+<span class="nc" id="L233">		}</span>
+<span class="nc" id="L234">		return empByMailId;</span>
+	}
+
+	/**
+	 * &lt;h2&gt;User View Employee Detail&lt;/h2&gt;
+	 * 
+	 * Checks and display respective detail (employee,person and address) with
+	 * authentication
+	 * 
+	 * @param auth
+	 * @return
+	 * @throws BusinessException
+	 */
+	@GetMapping(&quot;/employee&quot;)
+	@PreAuthorize(&quot;hasRole('EMPLOYEE')&quot;)
+	public GetEmployeeDTO userViewEmployeeDetail(Authentication auth) throws BusinessException {
+<span class="nc" id="L250">		GetEmployeeDTO respectivEmployeeDtl = null;</span>
+		try {
+<span class="nc" id="L252">			respectivEmployeeDtl = userService.userViewEmployeeDetail(auth);</span>
+<span class="nc" id="L253">			log.debug(&quot;Employee-Controller-UserViewEmployeeDetail-Accessed&quot;);</span>
+<span class="nc" id="L254">		} catch (BusinessException e) {</span>
+<span class="nc" id="L255">			log.error(&quot;Employee-Controller-UserViewEmployeeDetail-Failed&quot;);</span>
+<span class="nc" id="L256">			throw new BusinessException(e.getErrorCode(), e.getMessage(), e.getErrorParams());</span>
+<span class="nc" id="L257">		}</span>
+<span class="nc" id="L258">		return respectivEmployeeDtl;</span>
+	}
+
+	/**
+	 * &lt;h2&gt;User Update Person Detail API&lt;/h2&gt;
+	 * 
+	 * Update person detail (mobile number, gender, age, marital status and aadhar
+	 * number) with authentication
+	 * 
+	 * @param authentication
+	 * @param person
+	 * @return
+	 * @throws BusinessException
+	 * @throws TechnicalException
+	 */
+	@PreAuthorize(&quot;hasRole('EMPLOYEE')&quot;)
+	@PutMapping(&quot;/employee/person&quot;)
+	public MessageDisplayDTO userUpdatePersonDtl(Authentication authentication, PersonDTO person)
+			throws BusinessException, TechnicalException {
+		MessageDisplayDTO messageDisplayDTO;
+		try {
+<span class="nc" id="L279">			messageDisplayDTO = userService.userUpdatePersonDtl(authentication, person);</span>
+<span class="nc" id="L280">			log.debug(&quot;Employee-Controller-UserUpdatePersonDetail-Accessed&quot;);</span>
+<span class="nc" id="L281">		} catch (BusinessException e) {</span>
+<span class="nc" id="L282">			log.error(&quot;Employee-Controller-UserUpdatePersonDetail-Failed&quot;);</span>
+<span class="nc" id="L283">			throw new BusinessException(e.getErrorCode(), e.getMessage(), e.getErrorParams());</span>
+<span class="nc" id="L284">		}</span>
+<span class="nc" id="L285">		return messageDisplayDTO;</span>
+	}
+
+	/**
+	 * &lt;h2&gt;User Update Address Detail API&lt;/h2&gt;
+	 * 
+	 * Update address detail (permanent and temporary) with authentication
+	 * 
+	 * @param authentication
+	 * @param address
+	 * @return
+	 * @throws BusinessException
+	 */
+	@PreAuthorize(&quot;hasRole('EMPLOYEE')&quot;)
+	@PutMapping(&quot;/employee/address&quot;)
+	public MessageDisplayDTO userUpdateAddressDtl(Authentication authentication, AddressDTO address)
+			throws BusinessException {
+		String message;
+		try {
+<span class="nc" id="L304">			message = userService.userUpdateAddressDtl(authentication, address);</span>
+<span class="nc" id="L305">			log.debug(&quot;Employee-Controller-UserUpdateAddressDetail-Accessed&quot;);</span>
+<span class="nc" id="L306">		} catch (BusinessException e) {</span>
+<span class="nc" id="L307">			log.error(&quot;Employee-Controller-UserUpdateAddressDetail-Failed&quot;);</span>
+<span class="nc" id="L308">			throw new BusinessException(e.getErrorCode(), e.getMessage(), e.getErrorParams());</span>
+<span class="nc" id="L309">		}</span>
+<span class="nc" id="L310">		return new MessageDisplayDTO(message);</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

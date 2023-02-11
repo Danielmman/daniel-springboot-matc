@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AuthTokenFilter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">EmployeeManagementSystem-MATC</a> &gt; <a href="index.source.html" class="el_package">com.ems.security</a> &gt; <span class="el_source">AuthTokenFilter.java</span></div><h1>AuthTokenFilter.java</h1><pre class="source lang-java linenums">package com.ems.security;
+
+import java.io.IOException;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.util.StringUtils;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import com.ems.model.sub.AuthenticationLog;
+import com.ems.repository.AuthLogRepository;
+
+import lombok.extern.log4j.Log4j2;
+
+/**
+ * &lt;h1&gt;Authentication Token Filter&lt;/h2&gt;
+ * 
+ * @author Daniel
+ *
+ */
+<span class="nc" id="L29">@Log4j2</span>
+<span class="nc" id="L30">public class AuthTokenFilter extends OncePerRequestFilter {</span>
+	@Autowired
+	private JwtUtils jwtUtils;
+
+	@Autowired
+	private UserDetailsServiceImpl userDetailsService;
+
+	@Autowired
+	private AuthLogRepository authLogRepository;
+
+	@Override
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+			throws ServletException, IOException {
+		try {
+<span class="nc" id="L44">			String jwt = parseJwt(request);</span>
+<span class="nc bnc" id="L45" title="All 4 branches missed.">			if (jwt != null &amp;&amp; jwtUtils.validateJwtToken(jwt)) {</span>
+<span class="nc" id="L46">				String username = jwtUtils.getUserNameFromJwtToken(jwt);</span>
+<span class="nc" id="L47">				UserDetails userDetails = userDetailsService.loadUserByUsername(username);</span>
+<span class="nc" id="L48">				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(</span>
+<span class="nc" id="L49">						userDetails, null, userDetails.getAuthorities());</span>
+<span class="nc" id="L50">				authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));</span>
+<span class="nc" id="L51">				SecurityContextHolder.getContext().setAuthentication(authentication);</span>
+
+				// Every API request stored as log in database
+<span class="nc" id="L54">				AuthenticationLog currentUserAuthLog = new AuthenticationLog();</span>
+<span class="nc" id="L55">				currentUserAuthLog.setAccesstime(currentUserAuthLog.getAccesstime());</span>
+<span class="nc" id="L56">				currentUserAuthLog.setUserName(username);</span>
+<span class="nc" id="L57">				currentUserAuthLog.setRole(userDetails.getAuthorities().toString());</span>
+<span class="nc" id="L58">				currentUserAuthLog.setAccessedMethod(request.getMethod());</span>
+<span class="nc" id="L59">				currentUserAuthLog.setRequestURL(request.getRequestURI());</span>
+<span class="nc" id="L60">				authLogRepository.save(currentUserAuthLog);</span>
+<span class="nc" id="L61">				log.debug(currentUserAuthLog.getUserName(), &quot; Log Stored&quot;);</span>
+			}
+<span class="nc" id="L63">		} catch (Exception e) {</span>
+<span class="nc" id="L64">			log.error(&quot;Cannot set user authentication: {0}&quot;, e);</span>
+<span class="nc" id="L65">		}</span>
+<span class="nc" id="L66">		filterChain.doFilter(request, response);</span>
+<span class="nc" id="L67">	}</span>
+
+	/**
+	 * &lt;h2&gt;Parse JWT&lt;/h2&gt;
+	 * 
+	 * Get token from header
+	 * 
+	 * @param request
+	 * @return
+	 */
+	private String parseJwt(HttpServletRequest request) {
+<span class="nc" id="L78">		String headerAuth = request.getHeader(&quot;Authorization&quot;);</span>
+<span class="nc bnc" id="L79" title="All 4 branches missed.">		if (StringUtils.hasText(headerAuth) &amp;&amp; headerAuth.startsWith(&quot;Bearer &quot;)) {</span>
+<span class="nc" id="L80">			return headerAuth.substring(7, headerAuth.length());</span>
+		}
+
+<span class="nc" id="L83">		return null;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>
